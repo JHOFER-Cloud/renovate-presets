@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Auto-update flake.nix vendorHash after Go module updates",
+  "extends": ["github>JHOFER-Cloud/renovate-presets:default"],
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "postUpgradeTasks": {
+        "commands": [
+          "go mod vendor",
+          "nix hash path ./vendor/ | xargs -I {} sed -i 's|vendorHash = \"sha256-.*\"|vendorHash = \"{}\"|' flake.nix",
+          "rm -rf vendor/"
+        ],
+        "fileFilters": ["flake.nix"],
+        "executionMode": "branch"
+      }
+    }
+  ]
+}
