@@ -1,0 +1,40 @@
+name: Validate Renovate Configs
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Pull Renovate image
+        run: docker pull ghcr.io/jhofer-cloud/renovate:latest
+
+      - name: Validate preset files
+        run: |
+          set -euo pipefail
+
+          mapfile -t files < <(git ls-files -- '*.json' '*.json5' ':(exclude).github/**')
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No tracked .json/.json5 preset files found to validate; failing workflow."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Validating $file"
+            docker run --pull=never --rm -v "$PWD:/work:ro" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
+          done
+
+          echo "Validated ${#files[@]} preset file(s)."
