@@ -28,7 +28,7 @@ jobs:
           mapfile -t files < <(git ls-files -- '*.json' '*.json5' ':(exclude).github/**')
 
           if [ "${#files[@]}" -eq 0 ]; then
-            echo "No Renovate preset files found to validate."
+            echo "No tracked .json/.json5 preset files found to validate; failing workflow."
             exit 1
           fi
 
