@@ -24,7 +24,14 @@ jobs:
 
           mapfile -t files < <(git ls-files -- '*.json' '*.json5' ':(exclude).github/**')
 
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No Renovate preset files found to validate."
+            exit 1
+          fi
+
           for file in "${files[@]}"; do
             echo "Validating $file"
             docker run --rm -v "$PWD:/work:ro" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
           done
+
+          echo "Validated ${#files[@]} preset file(s)."
