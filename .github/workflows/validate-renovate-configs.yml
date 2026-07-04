@@ -15,16 +15,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
       - name: Validate preset files
         run: |
           set -euo pipefail
 
           while IFS= read -r file; do
             echo "Validating $file"
-            npx --yes --package renovate@latest renovate-config-validator "$file"
+            docker run --rm -v "$PWD:/work" -w /work renovate/renovate:latest renovate-config-validator "$file"
           done < <(git ls-files '*.json')
