@@ -18,6 +18,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Pull Renovate image
+        run: docker pull ghcr.io/jhofer-cloud/renovate:latest
+
       - name: Validate preset files
         run: |
           set -euo pipefail
@@ -31,7 +34,7 @@ jobs:
 
           for file in "${files[@]}"; do
             echo "Validating $file"
-            docker run --rm -v "$PWD:/work:ro" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
+            docker run --pull=never --rm -v "$PWD:/work:ro" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
           done
 
           echo "Validated ${#files[@]} preset file(s)."
