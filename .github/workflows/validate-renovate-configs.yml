@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -19,7 +22,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          while IFS= read -r file; do
+          mapfile -t files < <(git ls-files -- '*.json' '*.json5' ':(exclude).github/**')
+
+          for file in "${files[@]}"; do
             echo "Validating $file"
-            docker run --rm -v "$PWD:/work" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
-          done < <(git ls-files '*.json')
+            docker run --rm -v "$PWD:/work:ro" -w /work ghcr.io/jhofer-cloud/renovate:latest renovate-config-validator "$file"
+          done
