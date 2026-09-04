@@ -3,5 +3,6 @@
   "extends": [":dependencyDashboard"],
   "description": "Renovate default config",
   "configMigration": true,
-  "nixSubstituters": ["https://ojsef39.cachix.org"]
+  "nixSubstituters": ["https://ojsef39.cachix.org"],
+  "minimumReleaseAge": "1 day"
 }
