@@ -1,8 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [":dependencyDashboard"],
+  "extends": [
+    ":dependencyDashboard",
+    "security:minimumReleaseAgeNpm",
+    "security:minimumReleaseAgePypi",
+    "security:minimumReleaseAgeCrate"
+  ],
   "description": "Renovate default config",
   "configMigration": true,
   "nixSubstituters": ["https://ojsef39.cachix.org"],
-  "minimumReleaseAge": "1 day"
+  "minimumReleaseAge": "1 day",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "packageRules": [
+    {
+      "description": "FlakeHub rolling branches (0.1) publish several times a day, so they are never old enough to satisfy minimumReleaseAge",
+      "matchDatasources": ["flakehub"],
+      "minimumReleaseAge": null
+    }
+  ]
 }
